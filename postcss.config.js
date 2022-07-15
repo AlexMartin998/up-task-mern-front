@@ -1,7 +1,6 @@
+const tailwindcss = require('tailwindcss');
+
+// eslint-disable-next-line no-undef
 module.exports = {
-  content: ['index.html', './src/**/*.{jsx,ts,tsx}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+  plugins: [tailwindcss('./tailwind.config.js'), require('autoprefixer')],
 };
