@@ -51,7 +51,7 @@ export const Register = () => {
       reset();
     } catch (error) {
       setAlerta({ error: true, msg: error.response.data.errors[0].email });
-      // reset();
+      reset();
     }
   };
 
@@ -80,7 +80,6 @@ export const Register = () => {
             type="text"
             placeholder="Tu Nombre"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
-            autoFocus={true}
             name="name"
             value={name}
             onChange={handleInputChange}

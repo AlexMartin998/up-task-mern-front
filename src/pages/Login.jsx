@@ -20,6 +20,7 @@ export const Login = () => {
             id="email"
             type="email"
             placeholder="Email"
+            autoFocus={true}
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
           />
         </div>
