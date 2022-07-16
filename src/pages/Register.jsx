@@ -1,6 +1,60 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Alert } from '../components/Alert';
+import { fetchWithoutToken } from '../helper/fetch';
+
+import { useForm } from '../hook/useForm';
+
+const initState = {
+  name: '',
+  email: '',
+  password: '',
+  repeatPassword: '',
+};
 
 export const Register = () => {
+  const [formValues, handleInputChange, reset] = useForm(initState);
+  const { name, email, password, repeatPassword } = formValues;
+
+  const [alerta, setAlerta] = useState({});
+  const { msg } = alerta;
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    if (Object.values(formValues).some(field => !field))
+      return setAlerta({
+        msg: 'Todos los campos son obligatorios',
+        error: true,
+      });
+
+    if (password !== repeatPassword)
+      return setAlerta({ msg: 'Los passwords no son iguales', error: true });
+
+    if (password.length < 6)
+      return setAlerta({
+        msg: 'El password debe ser de al menos 6 caracteres',
+        error: true,
+      });
+
+    setAlerta({});
+
+    // Add new user
+    try {
+      const { data } = await fetchWithoutToken(
+        '/auth/signup',
+        { name, email, password },
+        'POST'
+      );
+
+      setAlerta({ error: false, msg: data.msg });
+      reset();
+    } catch (error) {
+      setAlerta({ error: true, msg: error.response.data.errors[0].email });
+      // reset();
+    }
+  };
+
   return (
     <>
       <h1 className="text-sky-600 font-black text-6xl capitalize">
@@ -8,7 +62,12 @@ export const Register = () => {
         <span className="text-slate-700">proyectos</span>
       </h1>
 
-      <form className="my-10 bg-white shadow rounded-lg p-10">
+      <form
+        onSubmit={handleSubmit}
+        className="my-10 bg-white shadow rounded-lg p-10" /* autoComplete="off" */
+      >
+        {msg && <Alert alerta={alerta} />}
+
         <div className="my-5">
           <label
             htmlFor="name"
@@ -21,6 +80,10 @@ export const Register = () => {
             type="text"
             placeholder="Tu Nombre"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            autoFocus={true}
+            name="name"
+            value={name}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -35,6 +98,9 @@ export const Register = () => {
             type="email"
             placeholder="Email de Registro"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            name="email"
+            value={email}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -49,6 +115,9 @@ export const Register = () => {
             type="password"
             placeholder="Password de Registro"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            name="password"
+            value={password}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -64,6 +133,8 @@ export const Register = () => {
             placeholder="Repite tu Password"
             className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
             name="repeatPassword"
+            value={repeatPassword}
+            onChange={handleInputChange}
           />
         </div>
 
