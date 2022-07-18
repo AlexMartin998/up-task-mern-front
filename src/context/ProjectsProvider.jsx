@@ -101,6 +101,32 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const deleteProject = async id => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/project/${id}`,
+        'DELETE',
+        tokenJWT
+      );
+      setAlerta({ msg: data.msg, error: false });
+
+      setTimeout(() => {
+        setAlert({});
+        navigate('/projects', { replace: true });
+      }, 2100);
+
+      const updatedProjects = projects.filter(
+        projectState => projectState._id !== id
+      );
+      setProjects(updatedProjects);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // TODO: Verificar q sirva pa algo
   const setProjectCb = useCallback(
     project => {
@@ -119,6 +145,7 @@ export const ProjectsProvider = ({ children }) => {
         submitProject,
         getProject,
         setProjectCb,
+        deleteProject,
       }}
     >
       {children}
