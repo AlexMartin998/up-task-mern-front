@@ -48,11 +48,11 @@ export const Register = () => {
       );
 
       setAlerta({ error: false, msg: data.msg });
-      reset();
     } catch (error) {
       setAlerta({ error: true, msg: error.response.data.errors[0].email });
-      reset();
     }
+
+    reset();
   };
 
   return (

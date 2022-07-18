@@ -47,7 +47,7 @@ export const NewPassword = () => {
       setAlerta({ msg: data.msg, error: false });
       setUpdatedPassword(true);
     } catch (error) {
-      console.log(error.response.data);
+      setAlerta({ msg: error.response.data.msg, error: true });
     }
 
     reset();
