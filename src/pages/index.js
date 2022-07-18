@@ -8,3 +8,4 @@ export { ConfirmAccount } from './ConfirmAccount';
 export { Projects } from './Projects';
 export { NewProject } from './NewProject';
 export { Project } from './Project';
+export { EditProject } from './EditProject';

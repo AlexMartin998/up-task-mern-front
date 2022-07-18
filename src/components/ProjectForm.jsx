@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { useForm } from '../hook/useForm';
 import { useProjects } from '../hook/useProjects';
 import { Alert } from './Alert';
@@ -10,11 +13,21 @@ const initState = {
 };
 
 export const ProjectForm = () => {
-  const { alerta, setAlert, submitProject } = useProjects();
-  const [formValues, handleInputChange, reset] = useForm(initState);
+  const { id } = useParams();
+  const { alerta, setAlert, submitProject, project } = useProjects();
+  const [formValues, handleInputChange, reset, setFormValues] =
+    useForm(initState);
 
   const { name, description, deliveryDate, client } = formValues;
   const { msg } = alerta;
+
+  useEffect(() => {
+    id &&
+      setFormValues({
+        ...project,
+        deliveryDate: project?.deliveryDate.split('T')[0],
+      });
+  }, []);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -25,7 +38,7 @@ export const ProjectForm = () => {
       });
 
     // Add new project
-    await submitProject({ name, description, deliveryDate, client });
+    await submitProject({ name, description, deliveryDate, client, id });
 
     reset();
   };
@@ -106,8 +119,7 @@ export const ProjectForm = () => {
 
       <input
         type="submit"
-        // value={id ? 'Actualizar Proyecto' : 'Crear Proyecto'}
-        value="Enviar"
+        value={id ? 'Actualizar Proyecto' : 'Crear Proyecto'}
         className="bg-sky-600 w-full p-3 uppercase font-bold text-white rounded cursor-pointer hover:bg-sky-700 transition-colors"
       />
       <input
