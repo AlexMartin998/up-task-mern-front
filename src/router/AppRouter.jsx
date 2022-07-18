@@ -8,12 +8,15 @@ import {
   ConfirmAccount,
   Login,
   NewPassword,
+  NewProject,
   PasswordRecovery,
+  Project,
   Projects,
   Register,
 } from '../pages';
 import { PrivateRoutes } from './PrivateRoutes';
 import { PublicRoutes } from './PublicRoutes';
+import { ProjectsProvider } from '../context/ProjectsProvider';
 
 export const AppRouter = () => {
   const { authLoading } = useAuth();
@@ -38,14 +41,18 @@ export const AppRouter = () => {
         </Route>
 
         <Route
-          path="/project"
+          path="/projects"
           element={
             <PrivateRoutes>
-              <PrivateLayout />
+              <ProjectsProvider>
+                <PrivateLayout />
+              </ProjectsProvider>
             </PrivateRoutes>
           }
         >
           <Route index element={<Projects />} />
+          <Route path="new" element={<NewProject />} />
+          <Route path=":id" element={<Project />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
