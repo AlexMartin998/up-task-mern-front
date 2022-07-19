@@ -12,6 +12,7 @@ export const ProjectsProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({});
   const [alerta, setAlerta] = useState({});
+  const [modalTaskForm, setModalTaskForm] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -127,6 +128,27 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  // Tasks
+  const toggleTaskModal = () => {
+    setModalTaskForm(!modalTaskForm);
+  };
+
+  const submitTask = async task => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken('/task', 'POST', tokenJWT, task);
+      setAlert({ msg: data.msg, error: false });
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        msg: JSON.stringify(error.response.data, null, 3),
+        error: true,
+      });
+    }
+  };
+
   // TODO: Verificar q sirva pa algo
   const setProjectCb = useCallback(
     project => {
@@ -141,11 +163,14 @@ export const ProjectsProvider = ({ children }) => {
         projects,
         alerta,
         project,
+        modalTaskForm,
         setAlert,
         submitProject,
         getProject,
         setProjectCb,
         deleteProject,
+        toggleTaskModal,
+        submitTask,
       }}
     >
       {children}
