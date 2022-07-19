@@ -140,6 +140,14 @@ export const ProjectsProvider = ({ children }) => {
     try {
       const { data } = await fetchWithToken('/task', 'POST', tokenJWT, task);
       setAlert({ msg: data.msg, error: false });
+
+      // Add task added to state
+      const updatedProject = { ...project };
+      updatedProject.tasks = [...project.tasks, data.task];
+
+      setProject(updatedProject);
+      setAlert({});
+      setModalTaskForm(false);
     } catch (error) {
       console.log(error);
       setAlert({

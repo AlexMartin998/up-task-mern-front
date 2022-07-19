@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useProjects } from '../hook/useProjects';
 import { ModalTaskForm } from '../components/ModalTaskForm';
+import { Task } from '../components';
 
 export const Project = () => {
   const { id } = useParams();
@@ -16,8 +17,6 @@ export const Project = () => {
       setLoading(false);
     })();
   }, []);
-
-  console.log(project);
 
   return (
     <>
@@ -73,7 +72,7 @@ export const Project = () => {
           <p className="font-bold text-xl mt-10">Tareas del Proyecto</p>
           <div className="bg-white shadow mt-10 rounded-lg">
             {project.tasks?.length ? (
-              'SIII'
+              project.tasks.map(task => <Task key={task._id} task={task} />)
             ) : (
               <p className="text-center my-5 p-10">
                 No hay tareas en este proyecto
