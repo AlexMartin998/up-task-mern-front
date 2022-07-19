@@ -13,6 +13,7 @@ export const ProjectsProvider = ({ children }) => {
   const [project, setProject] = useState({});
   const [alerta, setAlerta] = useState({});
   const [modalTaskForm, setModalTaskForm] = useState(false);
+  const [task, setTask] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -131,9 +132,14 @@ export const ProjectsProvider = ({ children }) => {
   // Tasks
   const toggleTaskModal = () => {
     setModalTaskForm(!modalTaskForm);
+    setTask({});
   };
 
   const submitTask = async task => {
+    task.taskId ? await editTask(task) : await createTask(task);
+  };
+
+  const createTask = async task => {
     const tokenJWT = getJwtFromLS();
     if (!tokenJWT) return;
 
@@ -157,6 +163,42 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const editTask = async task => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/task/${task.taskId}`,
+        'PUT',
+        tokenJWT,
+        task
+      );
+      setAlert({ msg: data.msg, error: false });
+
+      // Add task added to state
+      const updatedProject = { ...project };
+      updatedProject.tasks = project.tasks.map(taskState =>
+        taskState._id === data.task._id ? data.task : taskState
+      );
+      setProject(updatedProject);
+
+      setAlert({});
+      setModalTaskForm(false);
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        msg: JSON.stringify(error.response.data, null, 3),
+        error: true,
+      });
+    }
+  };
+
+  const handleEditTask = task => {
+    setTask(task);
+    setModalTaskForm(true);
+  };
+
   // TODO: Verificar q sirva pa algo
   const setProjectCb = useCallback(
     project => {
@@ -172,6 +214,7 @@ export const ProjectsProvider = ({ children }) => {
         alerta,
         project,
         modalTaskForm,
+        task,
         setAlert,
         submitProject,
         getProject,
@@ -179,6 +222,7 @@ export const ProjectsProvider = ({ children }) => {
         deleteProject,
         toggleTaskModal,
         submitTask,
+        handleEditTask,
       }}
     >
       {children}

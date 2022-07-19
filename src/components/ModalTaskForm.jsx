@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useParams } from 'react-router-dom';
 
@@ -11,18 +11,41 @@ const PRIORITY = ['Baja', 'Media', 'Alta'];
 
 export const ModalTaskForm = () => {
   const { id } = useParams();
-  const { modalTaskForm, toggleTaskModal, alerta, setAlert, submitTask } =
+  const { modalTaskForm, toggleTaskModal, alerta, setAlert, submitTask, task } =
     useProjects();
-  const [formValues, handleInputChange, reset] = useForm(initState);
+  const [formValues, handleInputChange, reset, setFormValues] =
+    useForm(initState);
   const { name, description, priority, deliveryDate } = formValues;
   const { msg } = alerta;
 
+  const [taskId, setTaskId] = useState('');
+
+  useEffect(() => {
+    if (task?._id) {
+      setFormValues({
+        ...task,
+        deliveryDate: task?.deliveryDate?.split('T')[0],
+      });
+      return setTaskId(task?._id);
+    }
+
+    setTaskId('');
+    reset();
+  }, [task]);
+
   const handleSubmit = e => {
     e.preventDefault();
-    if (Object.values(formValues).some(field => !field))
+    if ([name, description, priority, deliveryDate].includes(''))
       return setAlert({ msg: 'Todos los campos son requeridos', error: true });
 
-    submitTask({ name, description, priority, deliveryDate, project: id });
+    submitTask({
+      name,
+      description,
+      priority,
+      deliveryDate,
+      project: id,
+      taskId,
+    });
 
     reset();
   };
@@ -93,7 +116,7 @@ export const ModalTaskForm = () => {
                     as="h3"
                     className="text-lg leading-6 font-bold text-gray-900 mb-6"
                   >
-                    Crear Tarea
+                    {task?._id ? 'Editar Tarea' : 'Crear Tarea'}
                   </Dialog.Title>
 
                   {msg && <Alert alerta={alerta} />}
@@ -172,8 +195,7 @@ export const ModalTaskForm = () => {
                     <input
                       type="submit"
                       className="bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded text-sm"
-                      // value={id ? 'Guardar Cambios' : 'Crear Tarea'}
-                      value="Crear Tarea"
+                      value={task?._id ? 'Guardar Cambios' : 'Crear Tarea'}
                     />
                   </form>
                 </div>
