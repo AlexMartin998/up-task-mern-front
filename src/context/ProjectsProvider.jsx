@@ -51,11 +51,15 @@ export const ProjectsProvider = ({ children }) => {
       const { data } = await fetchWithToken(`/project/${id}`, 'GET', tokenJWT);
       setProject(data.project);
     } catch (error) {
-      console.log(error.response.data.errors);
+      console.log(error.response.data.errors[0]);
       setAlert({
         msg: JSON.stringify(error.response.data.errors[0]),
         error: true,
       });
+
+      setTimeout(() => {
+        navigate('/projects', { replace: true });
+      }, 2000);
     }
   };
 
@@ -189,9 +193,6 @@ export const ProjectsProvider = ({ children }) => {
         taskState._id === data.task._id ? data.task : taskState
       );
       setProject(updatedProject);
-
-      setAlert({});
-      setModalTaskForm(false);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -199,6 +200,9 @@ export const ProjectsProvider = ({ children }) => {
         error: true,
       });
     }
+
+    setModalTaskForm(false);
+    setAlert({});
   };
 
   const handleEditTask = task => {
@@ -230,12 +234,6 @@ export const ProjectsProvider = ({ children }) => {
         taskState => taskState._id !== task._id
       );
       setProject(updatedProject);
-
-      setModalDeleteTask(false);
-      setTask({});
-      setTimeout(() => {
-        setAlert({});
-      }, 2500);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -243,6 +241,9 @@ export const ProjectsProvider = ({ children }) => {
         error: true,
       });
     }
+
+    setModalDeleteTask(false);
+    setTask({});
   };
 
   // Collaborators

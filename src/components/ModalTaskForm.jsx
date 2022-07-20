@@ -11,14 +11,14 @@ const PRIORITY = ['Baja', 'Media', 'Alta'];
 
 export const ModalTaskForm = () => {
   const { id } = useParams();
-  const { modalTaskForm, toggleTaskModal, alerta, setAlert, submitTask, task } =
-    useProjects();
+  const { modalTaskForm, toggleTaskModal, submitTask, task } = useProjects();
   const [formValues, handleInputChange, reset, setFormValues] =
     useForm(initState);
   const { name, description, priority, deliveryDate } = formValues;
-  const { msg } = alerta;
 
   const [taskId, setTaskId] = useState('');
+  const [alerta, setAlerta] = useState({});
+  const { msg } = alerta;
 
   useEffect(() => {
     if (task?._id) {
@@ -31,12 +31,13 @@ export const ModalTaskForm = () => {
 
     setTaskId('');
     reset();
+    setAlerta({});
   }, [task]);
 
   const handleSubmit = e => {
     e.preventDefault();
     if ([name, description, priority, deliveryDate].includes(''))
-      return setAlert({ msg: 'Todos los campos son requeridos', error: true });
+      return setAlerta({ msg: 'Todos los campos son requeridos', error: true });
 
     submitTask({
       name,
