@@ -2,7 +2,7 @@ import { useProjects } from '../hook/useProjects';
 import { formatDate } from '../helper/formatDate';
 
 export const Task = ({ task }) => {
-  const { handleEditTask } = useProjects();
+  const { handleEditTask, handleModalDeleteTask } = useProjects();
   const { name, description, deliveryDate, priority, state } = task;
 
   return (
@@ -32,7 +32,10 @@ export const Task = ({ task }) => {
           </button>
         )}
 
-        <button className="bg-red-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg">
+        <button
+          onClick={() => handleModalDeleteTask(task)}
+          className="bg-red-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg"
+        >
           Eliminar
         </button>
       </div>

@@ -3,11 +3,12 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useProjects } from '../hook/useProjects';
 import { ModalTaskForm } from '../components/ModalTaskForm';
-import { Task } from '../components';
+import { Alert, ModalDeleteTask, Task } from '../components';
 
 export const Project = () => {
   const { id } = useParams();
-  const { project, getProject, toggleTaskModal } = useProjects();
+  const { project, getProject, toggleTaskModal, alerta } = useProjects();
+  const { msg } = alerta;
 
   const [loading, setLoading] = useState(true);
 
@@ -70,6 +71,15 @@ export const Project = () => {
           </button>
 
           <p className="font-bold text-xl mt-10">Tareas del Proyecto</p>
+
+          <div className="flex justify-center mt-5 mb-2">
+            {msg && (
+              <div className="w-full md:w-1/3 lg:w-1/4">
+                <Alert alerta={alerta} />
+              </div>
+            )}
+          </div>
+
           <div className="bg-white shadow mt-10 rounded-lg">
             {project.tasks?.length ? (
               project.tasks.map(task => <Task key={task._id} task={task} />)
@@ -80,7 +90,12 @@ export const Project = () => {
             )}
           </div>
 
+          <div className="flex items-center justify-between mt-10">
+            <p className="font-bold text-xl mt-10">Colaboradores</p>
+          </div>
+
           <ModalTaskForm />
+          <ModalDeleteTask />
         </>
       )}
     </>

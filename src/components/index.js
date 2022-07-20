@@ -7,3 +7,4 @@ export { ProjectForm } from './ProjectForm';
 export { ProjectPreview } from './ProjectPreview';
 export { ModalTaskForm } from './ModalTaskForm';
 export { Task } from './Task';
+export { ModalDeleteTask } from './ModalDeleteTask';

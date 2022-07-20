@@ -14,6 +14,7 @@ export const ProjectsProvider = ({ children }) => {
   const [alerta, setAlerta] = useState({});
   const [modalTaskForm, setModalTaskForm] = useState(false);
   const [task, setTask] = useState({});
+  const [modalDeleteTask, setModalDeleteTask] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -199,13 +200,44 @@ export const ProjectsProvider = ({ children }) => {
     setModalTaskForm(true);
   };
 
-  // TODO: Verificar q sirva pa algo
-  const setProjectCb = useCallback(
-    project => {
-      setProject(project);
-    },
-    [setProject]
-  );
+  const handleModalDeleteTask = task => {
+    setTask(task);
+    setModalDeleteTask(!modalDeleteTask);
+  };
+
+  const deleteTask = async () => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/task/${task._id}`,
+        'DELETE',
+        tokenJWT,
+        task
+      );
+      setAlert({ msg: data.msg, error: false });
+
+      // Update state
+      const updatedProject = { ...project };
+      updatedProject.tasks = project.tasks.filter(
+        taskState => taskState._id !== task._id
+      );
+      setProject(updatedProject);
+
+      setModalDeleteTask(false);
+      setTask({});
+      setTimeout(() => {
+        setAlert({});
+      }, 2500);
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        msg: JSON.stringify(error.response.data, null, 3),
+        error: true,
+      });
+    }
+  };
 
   return (
     <ProjectContext.Provider
@@ -215,14 +247,16 @@ export const ProjectsProvider = ({ children }) => {
         project,
         modalTaskForm,
         task,
+        modalDeleteTask,
         setAlert,
         submitProject,
         getProject,
-        setProjectCb,
         deleteProject,
         toggleTaskModal,
         submitTask,
         handleEditTask,
+        handleModalDeleteTask,
+        deleteTask,
       }}
     >
       {children}
