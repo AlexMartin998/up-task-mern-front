@@ -28,9 +28,6 @@ export const Project = () => {
     })();
   }, []);
 
-  // console.log(project);
-  console.log(isAdmin);
-
   return (
     <>
       {project._id && !loading ? (
