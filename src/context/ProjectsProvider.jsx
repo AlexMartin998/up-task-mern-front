@@ -15,6 +15,7 @@ export const ProjectsProvider = ({ children }) => {
   const [modalTaskForm, setModalTaskForm] = useState(false);
   const [task, setTask] = useState({});
   const [modalDeleteTask, setModalDeleteTask] = useState(false);
+  const [collaborator, setCollaborator] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -32,7 +33,7 @@ export const ProjectsProvider = ({ children }) => {
 
       setTimeout(() => {
         setAlerta({});
-      }, 2000);
+      }, 3000);
     },
     [setAlerta]
   );
@@ -49,7 +50,11 @@ export const ProjectsProvider = ({ children }) => {
       const { data } = await fetchWithToken(`/project/${id}`, 'GET', tokenJWT);
       setProject(data.project);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data.errors);
+      setAlert({
+        msg: JSON.stringify(error.response.data.errors[0]),
+        error: true,
+      });
     }
   };
 
@@ -239,6 +244,54 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  // Collaborators
+  const submitCollaborator = async email => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        '/project/collaborator',
+        'POST',
+        tokenJWT,
+        { email }
+      );
+      setCollaborator(data.user);
+      setAlert({});
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true,
+      });
+      setCollaborator({});
+    }
+  };
+
+  const addCollaborator = async email => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/project/collaborator/${project._id}`,
+        'POST',
+        tokenJWT,
+        { email }
+      );
+      setAlert({ msg: data.msg });
+      setCollaborator({});
+      setAlert({}); // ???? xq setAlert ya lo hace con un setTimeout
+    } catch (error) {
+      setAlert({
+        msg:
+          error.response.data.msg ||
+          JSON.stringify(error.response.data.errors[0], null, 3),
+        error: true,
+      });
+      setCollaborator({});
+    }
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -248,6 +301,7 @@ export const ProjectsProvider = ({ children }) => {
         modalTaskForm,
         task,
         modalDeleteTask,
+        collaborator,
         setAlert,
         submitProject,
         getProject,
@@ -257,6 +311,8 @@ export const ProjectsProvider = ({ children }) => {
         handleEditTask,
         handleModalDeleteTask,
         deleteTask,
+        submitCollaborator,
+        addCollaborator,
       }}
     >
       {children}

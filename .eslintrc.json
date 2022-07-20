@@ -16,7 +16,15 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": 0,
-    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "offsetTernaryExpressions": true
+        // ,"flatTernaryExpressions": true
+      }
+    ],
     "linebreak-style": 1,
     "quotes": ["error", "single", { "avoidEscape": true }],
     "semi": ["error", "always"]

@@ -8,6 +8,7 @@ import {
   ConfirmAccount,
   EditProject,
   Login,
+  NewCollaborator,
   NewPassword,
   NewProject,
   PasswordRecovery,
@@ -53,6 +54,7 @@ export const AppRouter = () => {
         >
           <Route index element={<Projects />} />
           <Route path="new" element={<NewProject />} />
+          <Route path="new-collaborator/:id" element={<NewCollaborator />} />
           <Route path="edit/:id" element={<EditProject />} />
           <Route path=":id" element={<Project />} />
         </Route>

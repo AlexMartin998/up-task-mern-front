@@ -8,3 +8,4 @@ export { ProjectPreview } from './ProjectPreview';
 export { ModalTaskForm } from './ModalTaskForm';
 export { Task } from './Task';
 export { ModalDeleteTask } from './ModalDeleteTask';
+export { CollaboratorForm } from './CollaboratorForm';
