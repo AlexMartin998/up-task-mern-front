@@ -3,7 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useProjects } from '../hook/useProjects';
 import { ModalTaskForm } from '../components/ModalTaskForm';
-import { Alert, ModalDeleteTask, Task } from '../components';
+import {
+  Alert,
+  Collaborator,
+  ModalDeleteCollaborator,
+  ModalDeleteTask,
+  Task,
+} from '../components';
 
 export const Project = () => {
   const { id } = useParams();
@@ -101,8 +107,21 @@ export const Project = () => {
             </Link>
           </div>
 
+          <div className="bg-white shadow mt-10 rounded-lg">
+            {project.collaborators?.length ? (
+              project.collaborators.map(partner => (
+                <Collaborator key={partner.uid} collaborator={partner} />
+              ))
+            ) : (
+              <p className="text-center my-5 p-10">
+                Este proyecto no tiene Colaboradores
+              </p>
+            )}
+          </div>
+
           <ModalTaskForm />
           <ModalDeleteTask />
+          <ModalDeleteCollaborator />
         </>
       )}
     </>
