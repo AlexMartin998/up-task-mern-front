@@ -40,8 +40,13 @@ export const AuthProvider = ({ children }) => {
     [setAuth]
   );
 
+  const logOut = () => {
+    setAuth({});
+    localStorage.removeItem('token');
+  };
+
   return (
-    <AuthContext.Provider value={{ auth, authLoading, setAuthCb }}>
+    <AuthContext.Provider value={{ auth, authLoading, setAuthCb, logOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,10 +1,17 @@
 import { Link } from 'react-router-dom';
 
+import { useAuth } from '../hook/useAuth';
 import { useProjects } from '../hook/useProjects';
 import { ProjectSearcher } from './../components';
 
 export const Header = () => {
-  const { handleSearcher } = useProjects();
+  const { handleSearcher, logoutProjects } = useProjects();
+  const { logOut } = useAuth();
+
+  const handleLogout = () => {
+    logoutProjects();
+    logOut();
+  };
 
   return (
     <header className="px-4 py-5 bg-white border-b">
@@ -29,6 +36,7 @@ export const Header = () => {
           <button
             type="button"
             className="text-white text-sm bg-sky-600 p-3 rounded-md uppercase font-bold"
+            onClick={handleLogout}
           >
             Cerrar Sesión
           </button>
