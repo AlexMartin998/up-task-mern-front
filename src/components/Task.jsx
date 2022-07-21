@@ -21,7 +21,7 @@ export const Task = ({ task }) => {
         )}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col lg:flex-row gap-2">
         {isAdmin && (
           <button
             onClick={() => handleEditTask(task)}

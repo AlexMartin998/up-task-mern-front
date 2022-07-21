@@ -11,3 +11,4 @@ export { ModalDeleteTask } from './ModalDeleteTask';
 export { CollaboratorForm } from './CollaboratorForm';
 export { Collaborator } from './Collaborator';
 export { ModalDeleteCollaborator } from './ModalDeleteCollaborator';
+export { ProjectSearcher } from './ProjectSearcher';
