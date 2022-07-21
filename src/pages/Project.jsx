@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 import { useProjects } from '../hook/useProjects';
 import { ModalTaskForm } from '../components/ModalTaskForm';
@@ -12,9 +13,12 @@ import {
 } from '../components';
 import { useAdmin } from '../hook/useAdmin';
 
+let socket;
+
 export const Project = () => {
   const { id } = useParams();
-  const { project, getProject, toggleTaskModal, alerta } = useProjects();
+  const { project, getProject, toggleTaskModal, alerta, addAddedTaskState } =
+    useProjects();
   const isAdmin = useAdmin();
 
   const { msg } = alerta;
@@ -27,6 +31,27 @@ export const Project = () => {
       setLoading(false);
     })();
   }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
+
+    socket.emit('client:openProject', id);
+
+    // return () => {
+    //   socket.off('client:openProject');
+    // };
+  }, []);
+
+  useEffect(() => {
+    socket.on('server:addedTask', addedTask => {
+      // Identificar a q project quiere actualizar las tasks en el state
+      addedTask.project === project._id && addAddedTaskState(addedTask);
+    });
+
+    return () => {
+      socket.off('server:addedTask');
+    };
+  });
 
   return (
     <>

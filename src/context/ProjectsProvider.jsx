@@ -1,8 +1,11 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 import { getJwtFromLS } from '../helper/validateJwt';
 import { fetchWithToken } from '../helper/fetch';
+
+let socket;
 
 export const ProjectContext = createContext();
 
@@ -39,6 +42,10 @@ export const ProjectsProvider = ({ children }) => {
     },
     [setAlerta]
   );
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
+  }, []);
 
   const submitProject = async project => {
     project.id ? await updateProject(project) : await newProject(project);
@@ -159,13 +166,8 @@ export const ProjectsProvider = ({ children }) => {
       const { data } = await fetchWithToken('/task', 'POST', tokenJWT, task);
       setAlert({ msg: data.msg, error: false });
 
-      // Add task added to state
-      const updatedProject = { ...project };
-      updatedProject.tasks = [...project.tasks, data.task];
-
-      setProject(updatedProject);
-      setAlert({});
-      setModalTaskForm(false);
+      // Socket.io: Send created task
+      socket.emit('client:createTask', data.task);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -173,6 +175,8 @@ export const ProjectsProvider = ({ children }) => {
         error: true,
       });
     }
+    setAlert({});
+    setModalTaskForm(false);
   };
 
   const editTask = async task => {
@@ -368,6 +372,18 @@ export const ProjectsProvider = ({ children }) => {
     setProjectSearcher(!projectSearcher);
   };
 
+  // Socket.it
+  // submitProjectTasks
+  const addAddedTaskState = addedTask => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Add added task to state
+    const updatedProject = { ...project };
+    updatedProject.tasks = [...updatedProject.tasks, addedTask];
+    setProject(updatedProject);
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -395,6 +411,7 @@ export const ProjectsProvider = ({ children }) => {
         deleteCollaborator,
         completeTask,
         handleSearcher,
+        addAddedTaskState,
       }}
     >
       {children}

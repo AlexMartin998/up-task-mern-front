@@ -4,7 +4,7 @@ import { useProjects } from '../hook/useProjects';
 import { ProjectSearcher } from './../components';
 
 export const Header = () => {
-  const { handleSearcher, projectSearcher } = useProjects();
+  const { handleSearcher } = useProjects();
 
   return (
     <header className="px-4 py-5 bg-white border-b">
