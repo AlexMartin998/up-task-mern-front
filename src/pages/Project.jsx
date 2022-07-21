@@ -18,12 +18,14 @@ let socket;
 export const Project = () => {
   const { id } = useParams();
   const {
-    project,
-    getProject,
-    toggleTaskModal,
-    alerta,
     addAddedTaskState,
+    alerta,
+    getProject,
+    project,
     removeDeletedTaskState,
+    toggleTaskModal,
+    updateTaskState,
+    updateTaskStatus,
   } = useProjects();
   const isAdmin = useAdmin();
 
@@ -59,8 +61,20 @@ export const Project = () => {
         removeDeletedTaskState(deletedTask);
     });
 
+    socket.on('server:updatedTask', updatedTask => {
+      updatedTask.project === project._id && updateTaskState(updatedTask);
+    });
+
+    socket.on('server:updatedTaskState', updatedTaskState => {
+      updatedTaskState.project._id === project._id &&
+        updateTaskStatus(updatedTaskState);
+    });
+
     return () => {
       socket.off('server:addedTask');
+      socket.off('server:deletedTask');
+      socket.off('server:updatedTask');
+      socket.off('server:updatedTaskState');
     };
   });
 

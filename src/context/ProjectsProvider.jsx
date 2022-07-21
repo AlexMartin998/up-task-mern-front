@@ -340,12 +340,8 @@ export const ProjectsProvider = ({ children }) => {
         tokenJWT
       );
 
-      const updatedProject = { ...project };
-      updatedProject.tasks = project.tasks.map(taskState =>
-        taskState._id === data._id ? data : taskState
-      );
-
-      setProject(updatedProject);
+      // Socket.io: toggle task state
+      socket.emit('client:toggleTaskState', data);
     } catch (error) {
       setAlert({
         msg:
@@ -376,12 +372,39 @@ export const ProjectsProvider = ({ children }) => {
   };
 
   const removeDeletedTaskState = deletedTask => {
-    const updatedProject = { ...project };
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
 
     // Update state
+    const updatedProject = { ...project };
     updatedProject.tasks = project.tasks.filter(
       taskState => taskState._id !== deletedTask._id
     );
+    setProject(updatedProject);
+  };
+
+  const updateTaskState = updatedTask => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Update state
+    const updatedProject = { ...project };
+    updatedProject.tasks = project.tasks.map(taskState =>
+      taskState._id === updatedTask._id ? updatedTask : taskState
+    );
+    setProject(updatedProject);
+  };
+
+  const updateTaskStatus = updatedTaskState => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Update state
+    const updatedProject = { ...project };
+    updatedProject.tasks = project.tasks.map(taskState =>
+      taskState._id === updatedTaskState._id ? updatedTaskState : taskState
+    );
+
     setProject(updatedProject);
   };
 
@@ -414,6 +437,8 @@ export const ProjectsProvider = ({ children }) => {
         handleSearcher,
         addAddedTaskState,
         removeDeletedTaskState,
+        updateTaskState,
+        updateTaskStatus,
       }}
     >
       {children}
