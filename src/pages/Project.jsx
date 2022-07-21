@@ -17,8 +17,14 @@ let socket;
 
 export const Project = () => {
   const { id } = useParams();
-  const { project, getProject, toggleTaskModal, alerta, addAddedTaskState } =
-    useProjects();
+  const {
+    project,
+    getProject,
+    toggleTaskModal,
+    alerta,
+    addAddedTaskState,
+    removeDeletedTaskState,
+  } = useProjects();
   const isAdmin = useAdmin();
 
   const { msg } = alerta;
@@ -46,6 +52,11 @@ export const Project = () => {
     socket.on('server:addedTask', addedTask => {
       // Identificar a q project quiere actualizar las tasks en el state
       addedTask.project === project._id && addAddedTaskState(addedTask);
+    });
+
+    socket.on('server:deletedTask', deletedTask => {
+      deletedTask.project === project._id &&
+        removeDeletedTaskState(deletedTask);
     });
 
     return () => {

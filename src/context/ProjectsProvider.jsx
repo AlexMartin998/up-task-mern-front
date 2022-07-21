@@ -192,12 +192,8 @@ export const ProjectsProvider = ({ children }) => {
       );
       setAlert({ msg: data.msg, error: false });
 
-      // Add task added to state
-      const updatedProject = { ...project };
-      updatedProject.tasks = project.tasks.map(taskState =>
-        taskState._id === data.task._id ? data.task : taskState
-      );
-      setProject(updatedProject);
+      // Socket.io: edit event
+      socket.emit('client:editTask', data.task);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -233,12 +229,8 @@ export const ProjectsProvider = ({ children }) => {
       );
       setAlert({ msg: data.msg, error: false });
 
-      // Update state
-      const updatedProject = { ...project };
-      updatedProject.tasks = project.tasks.filter(
-        taskState => taskState._id !== task._id
-      );
-      setProject(updatedProject);
+      // Socket.io: Delete event
+      socket.emit('client:deleteTask', task);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -372,8 +364,7 @@ export const ProjectsProvider = ({ children }) => {
     setProjectSearcher(!projectSearcher);
   };
 
-  // Socket.it
-  // submitProjectTasks
+  // Socket.io
   const addAddedTaskState = addedTask => {
     const tokenJWT = getJwtFromLS();
     if (!tokenJWT) return;
@@ -381,6 +372,16 @@ export const ProjectsProvider = ({ children }) => {
     // Add added task to state
     const updatedProject = { ...project };
     updatedProject.tasks = [...updatedProject.tasks, addedTask];
+    setProject(updatedProject);
+  };
+
+  const removeDeletedTaskState = deletedTask => {
+    const updatedProject = { ...project };
+
+    // Update state
+    updatedProject.tasks = project.tasks.filter(
+      taskState => taskState._id !== deletedTask._id
+    );
     setProject(updatedProject);
   };
 
@@ -412,6 +413,7 @@ export const ProjectsProvider = ({ children }) => {
         completeTask,
         handleSearcher,
         addAddedTaskState,
+        removeDeletedTaskState,
       }}
     >
       {children}
