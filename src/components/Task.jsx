@@ -1,6 +1,5 @@
-import { useProjects } from '../hook/useProjects';
-import { formatDate } from '../helper/formatDate';
-import { useAdmin } from '../hook/useAdmin';
+import { useAdmin, useProjects } from '../hooks';
+import { formatDate } from '../helpers/formatDate';
 
 export const Task = ({ task }) => {
   const { handleEditTask, handleModalDeleteTask, completeTask } = useProjects();

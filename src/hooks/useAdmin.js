@@ -1,3 +1,5 @@
+'use strict';
+
 import { useAuth } from './useAuth';
 import { useProjects } from './useProjects';
 

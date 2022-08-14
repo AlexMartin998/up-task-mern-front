@@ -1,4 +1,4 @@
-import { useProjects } from '../hook/useProjects';
+import { useProjects } from '../hooks';
 
 export const Collaborator = ({ collaborator }) => {
   const { handleModalDeletePartner } = useProjects();

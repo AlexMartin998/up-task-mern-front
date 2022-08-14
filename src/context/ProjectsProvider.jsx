@@ -2,19 +2,19 @@ import { createContext, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-import { getJwtFromLS } from '../helper/validateJwt';
-import { fetchWithToken } from '../helper/fetch';
-
-let socket;
+import { getJwtFromLS } from '../helpers/checkJWTInLS';
+import { fetchWithToken } from '../helpers/fetch';
 
 export const ProjectContext = createContext();
 
+let socket;
+
 export const ProjectsProvider = ({ children }) => {
   const navigate = useNavigate();
-
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({});
   const [alerta, setAlerta] = useState({});
+  const [formAlerta, setFormAlerta] = useState({});
   const [modalTaskForm, setModalTaskForm] = useState(false);
   const [task, setTask] = useState({});
   const [modalDeleteTask, setModalDeleteTask] = useState(false);
@@ -27,9 +27,13 @@ export const ProjectsProvider = ({ children }) => {
       const tokenJWT = getJwtFromLS();
       if (!tokenJWT) return;
 
-      const { data } = await fetchWithToken('/project', 'GET', tokenJWT);
+      const { data } = await fetchWithToken('/projects', 'GET', tokenJWT);
       setProjects(data.projects);
     })();
+  }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
   }, []);
 
   const setAlert = useCallback(
@@ -43,12 +47,42 @@ export const ProjectsProvider = ({ children }) => {
     [setAlerta]
   );
 
-  useEffect(() => {
-    socket = io(import.meta.env.VITE_BACKEND_URL);
-  }, []);
+  const setFormAlert = useCallback(
+    alert => {
+      setFormAlerta(alert);
+
+      setTimeout(() => {
+        setFormAlerta({});
+      }, 2400);
+    },
+    [setFormAlerta]
+  );
 
   const submitProject = async project => {
     project.id ? await updateProject(project) : await newProject(project);
+  };
+
+  const newProject = async project => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        '/projects',
+        'POST',
+        tokenJWT,
+        project
+      );
+      setProjects([...projects, data.project]);
+
+      setFormAlert({ msg: data.msg, error: false });
+
+      setTimeout(() => {
+        navigate('/projects', { replace: true });
+      }, 2100);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getProject = async id => {
@@ -56,7 +90,7 @@ export const ProjectsProvider = ({ children }) => {
       const tokenJWT = getJwtFromLS();
       if (!tokenJWT) return;
 
-      const { data } = await fetchWithToken(`/project/${id}`, 'GET', tokenJWT);
+      const { data } = await fetchWithToken(`/projects/${id}`, 'GET', tokenJWT);
       setProject(data.project);
     } catch (error) {
       console.log(error.response.data.errors[0]);
@@ -71,37 +105,13 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
-  const newProject = async project => {
-    const tokenJWT = getJwtFromLS();
-    if (!tokenJWT) return;
-
-    try {
-      const { data } = await fetchWithToken(
-        '/project',
-        'POST',
-        tokenJWT,
-        project
-      );
-      setProjects([...projects, data.project]);
-
-      setAlerta({ msg: data.msg, error: false });
-
-      setTimeout(() => {
-        setAlert({});
-        navigate('/projects', { replace: true });
-      }, 2100);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const updateProject = async project => {
     const tokenJWT = getJwtFromLS();
     if (!tokenJWT) return;
 
     try {
       const { data } = await fetchWithToken(
-        `/project/${project.id}`,
+        `/projects/${project.id}`,
         'PUT',
         tokenJWT,
         project
@@ -111,10 +121,9 @@ export const ProjectsProvider = ({ children }) => {
       );
       setProjects(updatedProjects);
 
-      setAlerta({ msg: data.msg, error: false });
+      setFormAlert({ msg: data.msg, error: false });
 
       setTimeout(() => {
-        setAlert({});
         navigate('/projects', { replace: true });
       }, 2100);
     } catch (error) {
@@ -128,16 +137,13 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken(
-        `/project/${id}`,
+        `/projects/${id}`,
         'DELETE',
         tokenJWT
       );
-      setAlerta({ msg: data.msg, error: false });
+      setAlert({ msg: data.msg, error: false });
 
-      setTimeout(() => {
-        setAlert({});
-        navigate('/projects', { replace: true });
-      }, 2100);
+      navigate('/projects', { replace: true });
 
       const updatedProjects = projects.filter(
         projectState => projectState._id !== id
@@ -163,20 +169,22 @@ export const ProjectsProvider = ({ children }) => {
     if (!tokenJWT) return;
 
     try {
-      const { data } = await fetchWithToken('/task', 'POST', tokenJWT, task);
-      setAlert({ msg: data.msg, error: false });
+      const { data } = await fetchWithToken('/tasks', 'POST', tokenJWT, task);
+      setFormAlert({ msg: data.msg, error: false });
 
       // Socket.io: Send created task
       socket.emit('client:createTask', data.task);
     } catch (error) {
       console.log(error);
-      setAlert({
+      setFormAlert({
         msg: JSON.stringify(error.response.data, null, 3),
         error: true,
       });
     }
-    setAlert({});
-    setModalTaskForm(false);
+
+    setTimeout(() => {
+      setModalTaskForm(false);
+    }, 2400);
   };
 
   const editTask = async task => {
@@ -185,25 +193,26 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken(
-        `/task/${task.taskId}`,
+        `/tasks/${task.taskId}`,
         'PUT',
         tokenJWT,
         task
       );
-      setAlert({ msg: data.msg, error: false });
+      setFormAlert({ msg: data.msg, error: false });
 
       // Socket.io: edit event
       socket.emit('client:editTask', data.task);
     } catch (error) {
       console.log(error);
-      setAlert({
+      setFormAlert({
         msg: JSON.stringify(error.response.data, null, 3),
         error: true,
       });
     }
 
-    setModalTaskForm(false);
-    setAlert({});
+    setTimeout(() => {
+      setModalTaskForm(false);
+    }, 2400);
   };
 
   const handleEditTask = task => {
@@ -222,7 +231,7 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken(
-        `/task/${task._id}`,
+        `/tasks/${task._id}`,
         'DELETE',
         tokenJWT,
         task
@@ -244,22 +253,20 @@ export const ProjectsProvider = ({ children }) => {
   };
 
   // Collaborators
-  const submitCollaborator = async email => {
+  const getUser = async email => {
     const tokenJWT = getJwtFromLS();
     if (!tokenJWT) return;
 
     try {
-      const { data } = await fetchWithToken(
-        '/project/collaborator',
-        'POST',
-        tokenJWT,
-        { email }
-      );
+      const { data } = await fetchWithToken('/users', 'POST', tokenJWT, {
+        email,
+      });
+
       setCollaborator(data.user);
       setAlert({});
     } catch (error) {
       setAlert({
-        msg: error.response.data.msg,
+        msg: error.response.data.errors[0].msg,
         error: true,
       });
       setCollaborator({});
@@ -272,7 +279,7 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken(
-        `/project/collaborator/${project._id}`,
+        `/projects/collaborator/${project._id}`,
         'POST',
         tokenJWT,
         { email }
@@ -304,13 +311,14 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken(
-        `/project/collaborator/${project._id}`,
+        `/projects/collaborator/${project._id}`,
         'PUT',
         tokenJWT,
         { partnerId: collaborator.uid }
       );
       setAlert({ msg: data.msg });
 
+      // Update state
       const updatedProject = { ...project };
       updatedProject.collaborators = updatedProject.collaborators.filter(
         partnerState => partnerState.uid !== collaborator.uid
@@ -335,13 +343,13 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken(
-        `/task/state/${id}`,
+        `/tasks/state/${id}`,
         'PATCH',
         tokenJWT
       );
 
-      // Socket.io: toggle task state
-      socket.emit('client:toggleTaskState', data);
+      // Socket.io: toggle task state event
+      socket.emit('client:toggleTaskState', data.task);
     } catch (error) {
       setAlert({
         msg:
@@ -424,11 +432,13 @@ export const ProjectsProvider = ({ children }) => {
         project,
         modalTaskForm,
         task,
+        formAlerta,
         modalDeleteTask,
         collaborator,
         modalDeleteCollaborator,
         projectSearcher,
         setAlert,
+        setFormAlert,
         submitProject,
         getProject,
         deleteProject,
@@ -437,7 +447,7 @@ export const ProjectsProvider = ({ children }) => {
         handleEditTask,
         handleModalDeleteTask,
         deleteTask,
-        submitCollaborator,
+        getUser,
         addCollaborator,
         handleModalDeletePartner,
         deleteCollaborator,

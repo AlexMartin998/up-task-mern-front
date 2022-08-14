@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-import { useForm } from '../hook/useForm';
-import { fetchWithoutToken } from '../helper/fetch';
-import { Alert } from '../components/Alert';
+import { useAlert, useForm } from '../hooks';
+import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
 
 export const NewPassword = () => {
   const { token } = useParams();
   const [formValues, handleInputChange, reset] = useForm({ newPassword: '' });
-  const { newPassword } = formValues;
-
+  const [alerta, setAlerta] = useAlert({});
   const [isValidToken, setIsValidToken] = useState(false);
   const [updatedPassword, setUpdatedPassword] = useState(false);
-  const [alerta, setAlerta] = useState({});
+
+  const { newPassword } = formValues;
   const { msg } = alerta;
 
   useEffect(() => {
     (async () => {
       try {
-        await fetchWithoutToken(`/user/password-recovery/${token}`);
+        await fetchWithoutToken(`/users/password-recovery/${token}`);
 
         setAlerta({ msg: 'Coloca tu Nuevo Password', error: false });
         setIsValidToken(true);
@@ -39,7 +39,7 @@ export const NewPassword = () => {
 
     try {
       const { data } = await fetchWithoutToken(
-        `/user/password-recovery/${token}`,
+        `/users/password-recovery/${token}`,
         { password: newPassword },
         'POST'
       );

@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useForm } from '../hook/useForm';
-import { useProjects } from '../hook/useProjects';
+import { useForm, useProjects } from '../hooks';
 import { Alert } from './Alert';
 
 const initState = {
@@ -14,12 +13,12 @@ const initState = {
 
 export const ProjectForm = () => {
   const { id } = useParams();
-  const { alerta, setAlert, submitProject, project } = useProjects();
+  const { formAlerta, setAlert, submitProject, project } = useProjects();
   const [formValues, handleInputChange, reset, setFormValues] =
     useForm(initState);
 
   const { name, description, deliveryDate, client } = formValues;
-  const { msg } = alerta;
+  const { msg } = formAlerta;
 
   useEffect(() => {
     id &&
@@ -48,7 +47,7 @@ export const ProjectForm = () => {
       onSubmit={handleSubmit}
       className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow"
     >
-      {msg && <Alert alerta={alerta} />}
+      {msg && <Alert alerta={formAlerta} />}
 
       <div className="mb-5">
         <label
@@ -126,7 +125,6 @@ export const ProjectForm = () => {
         type="button"
         value="Reset Form"
         className="bg-red-500 w-full mt-4 p-3 text-white uppercase font-bold hover:bg-red-700 cursor-pointer transition-colors"
-        // onClick={handleResetForm}
         onClick={() => reset()}
       />
     </form>

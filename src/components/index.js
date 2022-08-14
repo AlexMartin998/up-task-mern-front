@@ -1,14 +1,14 @@
 'use strict';
 
-export { Alert } from './Alert';
-export { Header } from './Header';
-export { Sidebar } from './Sidebar';
-export { ProjectForm } from './ProjectForm';
-export { ProjectPreview } from './ProjectPreview';
-export { ModalTaskForm } from './ModalTaskForm';
-export { Task } from './Task';
-export { ModalDeleteTask } from './ModalDeleteTask';
-export { CollaboratorForm } from './CollaboratorForm';
-export { Collaborator } from './Collaborator';
-export { ModalDeleteCollaborator } from './ModalDeleteCollaborator';
-export { ProjectSearcher } from './ProjectSearcher';
+export * from './Alert';
+export * from './Header';
+export * from './Sidebar';
+export * from './ProjectForm';
+export * from './ProjectPreview';
+export * from './ModalTaskForm';
+export * from './Task';
+export * from './ModalDeleteTask';
+export * from './CollaboratorForm';
+export * from './Collaborator';
+export * from './ModalDeleteCollaborator';
+export * from './ProjectSearcher';

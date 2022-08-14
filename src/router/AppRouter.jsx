@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import { useAuth } from '../hook/useAuth';
+import { useAuth } from '../hooks';
+import { PublicRoutes } from './PublicRoutes';
 import AuthPublicLayout from '../layouts/AuthPublicLayout';
-import PrivateLayout from './../layouts/PrivateLayout';
-
+import PrivateLayout from '../layouts/PrivateLayout';
 import {
   ConfirmAccount,
   EditProject,
@@ -17,7 +17,6 @@ import {
   Register,
 } from '../pages';
 import { PrivateRoutes } from './PrivateRoutes';
-import { PublicRoutes } from './PublicRoutes';
 import { ProjectsProvider } from '../context/ProjectsProvider';
 
 export const AppRouter = () => {
@@ -54,8 +53,9 @@ export const AppRouter = () => {
         >
           <Route index element={<Projects />} />
           <Route path="new" element={<NewProject />} />
-          <Route path="new-collaborator/:id" element={<NewCollaborator />} />
           <Route path="edit/:id" element={<EditProject />} />
+          <Route path="new-collaborator/:id" element={<NewCollaborator />} />
+
           <Route path=":id" element={<Project />} />
         </Route>
 

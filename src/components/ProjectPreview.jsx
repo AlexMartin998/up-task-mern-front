@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hook/useAuth';
+
+import { useAuth } from '../hooks';
 
 export const ProjectPreview = ({ project }) => {
   const { auth } = useAuth();

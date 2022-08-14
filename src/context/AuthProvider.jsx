@@ -1,7 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 
-import { getJwtFromLS } from '../helper/validateJwt';
-import { fetchWithToken } from '../helper/fetch';
+import { getJwtFromLS } from '../helpers/checkJWTInLS';
+import { fetchWithToken } from '../helpers/fetch';
 
 export const AuthContext = createContext();
 
@@ -16,13 +16,17 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Check token
-        const { data } = await fetchWithToken('/user/profile', 'GET', tokenJWT);
+        const { data } = await fetchWithToken(
+          '/users/profile',
+          'GET',
+          tokenJWT
+        );
 
         setAuth(data.user);
       } catch (error) {
         setAuth({});
         console.log(error.response.data);
-        // logOut();
+        logOut();
       }
 
       // Private Routes

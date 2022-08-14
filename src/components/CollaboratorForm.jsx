@@ -1,9 +1,8 @@
-import { useForm } from '../hook/useForm';
-import { useProjects } from '../hook/useProjects';
+import { useForm, useProjects } from '../hooks';
 import { Alert } from './Alert';
 
 export const CollaboratorForm = () => {
-  const { alerta, setAlert, submitCollaborator, project } = useProjects();
+  const { alerta, setAlert, getUser, project } = useProjects();
   const [formValues, handleInputChange, reset] = useForm({ email: '' });
   const { email } = formValues;
   const { msg } = alerta;
@@ -19,7 +18,7 @@ export const CollaboratorForm = () => {
         error: true,
       });
 
-    await submitCollaborator(email);
+    await getUser(email);
     reset();
   };
 

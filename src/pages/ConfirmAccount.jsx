@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-import { Alert } from '../components/Alert';
-import { fetchWithoutToken } from '../helper/fetch';
+import { useAlert } from '../hooks';
+import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
 
 export const ConfirmAccount = () => {
   const { token } = useParams();
 
   const [confirmedAccount, setConfirmedAccount] = useState(false);
+  const [alerta, setAlerta] = useAlert({});
   const [loading, setLoading] = useState(true);
-  const [alerta, setAlerta] = useState({});
 
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await fetchWithoutToken(`/user/confirm/${token}`);
+        const { data } = await fetchWithoutToken(`/users/confirm/${token}`);
 
         setConfirmedAccount(true);
         setAlerta({

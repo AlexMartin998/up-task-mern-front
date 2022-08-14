@@ -1,7 +1,8 @@
 import { Fragment, useState } from 'react';
 import { Combobox, Dialog, Transition } from '@headlessui/react';
+import { useNavigate } from 'react-router-dom';
 
-import { useProjects } from '../hook/useProjects';
+import { useProjects } from '../hooks';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -10,6 +11,12 @@ function classNames(...classes) {
 export const ProjectSearcher = () => {
   const { projectSearcher, handleSearcher, projects } = useProjects();
   const [busqueda, setBusqueda] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearcherI = project => {
+    navigate(`/projects/${project._id}`);
+    handleSearcher();
+  };
 
   const filteredProjects =
     busqueda === ''
@@ -53,7 +60,8 @@ export const ProjectSearcher = () => {
           <Combobox
             as="div"
             className="mx-auto max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"
-            onChange={project => (window.location = `/projects/${project._id}`)}
+            // onChange={project => (window.location = `/projects/${project._id}`)}
+            onChange={handleSearcherI}
           >
             <div className="relative">
               <Combobox.Input

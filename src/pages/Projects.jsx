@@ -1,5 +1,5 @@
+import { useProjects } from '../hooks';
 import { ProjectPreview } from '../components';
-import { useProjects } from '../hook/useProjects';
 
 export const Projects = () => {
   const { projects } = useProjects();

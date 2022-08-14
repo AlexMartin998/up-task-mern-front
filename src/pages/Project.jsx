@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-import { useProjects } from '../hook/useProjects';
-import { ModalTaskForm } from '../components/ModalTaskForm';
 import {
   Alert,
   Collaborator,
   ModalDeleteCollaborator,
   ModalDeleteTask,
+  ModalTaskForm,
   Task,
 } from '../components';
-import { useAdmin } from '../hook/useAdmin';
+
+import { useAdmin, useProjects } from '../hooks';
 
 let socket;
 
@@ -29,9 +29,8 @@ export const Project = () => {
   } = useProjects();
   const isAdmin = useAdmin();
 
-  const { msg } = alerta;
-
   const [loading, setLoading] = useState(true);
+  const { msg } = alerta;
 
   useEffect(() => {
     (async () => {
@@ -44,10 +43,6 @@ export const Project = () => {
     socket = io(import.meta.env.VITE_BACKEND_URL);
 
     socket.emit('client:openProject', id);
-
-    // return () => {
-    //   socket.off('client:openProject');
-    // };
   }, []);
 
   useEffect(() => {

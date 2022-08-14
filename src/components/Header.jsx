@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import { useAuth } from '../hook/useAuth';
-import { useProjects } from '../hook/useProjects';
-import { ProjectSearcher } from './../components';
+import { useAuth, useProjects } from '../hooks';
+import { ProjectSearcher } from './ProjectSearcher';
 
 export const Header = () => {
   const { handleSearcher, logoutProjects } = useProjects();

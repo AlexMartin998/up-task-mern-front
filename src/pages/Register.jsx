@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert } from '../components/Alert';
-import { fetchWithoutToken } from '../helper/fetch';
 
-import { useForm } from '../hook/useForm';
+import { useAlert, useForm } from '../hooks';
+import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
 
 const initState = {
   name: '',
@@ -14,9 +13,8 @@ const initState = {
 
 export const Register = () => {
   const [formValues, handleInputChange, reset] = useForm(initState);
+  const [alerta, setAlerta] = useAlert({});
   const { name, email, password, repeatPassword } = formValues;
-
-  const [alerta, setAlerta] = useState({});
   const { msg } = alerta;
 
   const handleSubmit = async e => {
@@ -27,10 +25,8 @@ export const Register = () => {
         msg: 'Todos los campos son obligatorios',
         error: true,
       });
-
     if (password !== repeatPassword)
       return setAlerta({ msg: 'Los passwords no son iguales', error: true });
-
     if (password.length < 6)
       return setAlerta({
         msg: 'El password debe ser de al menos 6 caracteres',
@@ -49,7 +45,7 @@ export const Register = () => {
 
       setAlerta({ error: false, msg: data.msg });
     } catch (error) {
-      setAlerta({ error: true, msg: error.response.data.errors[0].email });
+      setAlerta({ msg: error.response.data.errors[0].msg, error: true });
     }
 
     reset();

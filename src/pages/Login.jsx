@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useForm } from '../hook/useForm';
-import { fetchWithoutToken } from '../helper/fetch';
-import { Alert } from '../components/Alert';
-import { useAuth } from '../hook/useAuth';
+import { useAlert, useAuth, useForm } from '../hooks';
+import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
 
 export const Login = () => {
   const { setAuthCb } = useAuth();
@@ -12,9 +10,9 @@ export const Login = () => {
     email: '',
     password: '',
   });
-  const { email, password } = formValues;
+  const [alerta, setAlerta] = useAlert({});
 
-  const [alerta, setAlerta] = useState({});
+  const { email, password } = formValues;
   const { msg } = alerta;
 
   const handleSubmit = async e => {

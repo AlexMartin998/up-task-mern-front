@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 
-import { useProjects } from '../hook/useProjects';
+import { useProjects } from '../hooks';
 
 export const ModalDeleteTask = () => {
   const { modalDeleteTask, handleModalDeleteTask, deleteTask } = useProjects();

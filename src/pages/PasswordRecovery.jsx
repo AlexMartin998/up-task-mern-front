@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useForm } from '../hook/useForm';
-import { fetchWithoutToken } from '../helper/fetch';
-import { Alert } from '../components/Alert';
+import { useAlert, useForm } from '../hooks';
+import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
 
 export const PasswordRecovery = () => {
   const [formValues, handleInputChange, reset] = useForm({ email: '' });
-  const { email } = formValues;
-
+  const [alerta, setAlerta] = useAlert({});
   const [emailSent, setEmailSent] = useState(false);
-  const [alerta, setAlerta] = useState({});
+
+  const { email } = formValues;
   const { msg } = alerta;
 
   const handleSubmit = async e => {
@@ -20,7 +20,7 @@ export const PasswordRecovery = () => {
 
     try {
       const { data } = await fetchWithoutToken(
-        '/user/token-recovery',
+        '/users/recovery-token',
         { email },
         'POST'
       );
